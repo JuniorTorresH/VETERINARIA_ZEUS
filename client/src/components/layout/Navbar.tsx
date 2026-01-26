@@ -49,7 +49,7 @@ export default function Navbar() {
           onClick={(e) => handleScrollTo(e, "#hero")}
         >
           <span className={cn("text-primary", !isScrolled && "text-white")}>VET</span>
-          <span className={cn("text-gray-800", !isScrolled && "text-white/90")}>CARE</span>
+          <span className={cn("text-gray-800", !isScrolled && "text-white/90")}>ZEUS</span>
         </a>
 
         {/* Desktop Nav */}

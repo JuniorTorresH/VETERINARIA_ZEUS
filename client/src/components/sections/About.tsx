@@ -28,7 +28,7 @@ export default function About() {
               Comprometidos con el bienestar de tu mascota
             </h2>
             <p className="text-gray-600 mb-6 leading-relaxed">
-              En VetCare creemos que cada mascota merece una vida larga, saludable y feliz. 
+              En VET-ZEUS creemos que cada mascota merece una vida larga, saludable y feliz. 
               Nuestro centro veterinario nace con la misión de brindar atención médica de calidad, 
               combinando experiencia profesional, tecnología clínica y un trato humano tanto para 
               las mascotas como para sus familias.

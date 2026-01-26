@@ -29,7 +29,7 @@ const galleryImages = [
     category: "Cirugía"
   },
   {
-    src: "https://images.unsplash.com/photo-1548767797-d8c844163c4c?q=80&w=2070&auto=format&fit=crop", 
+    src: "/images/Zeus.png", 
     alt: "Recuperación",
     category: "Hospitalización"
   }

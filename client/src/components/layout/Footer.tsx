@@ -1,5 +1,8 @@
-import { MapPin, Phone, Mail, Clock, Facebook, Instagram, Twitter } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faFacebookF, faInstagram, faXTwitter } from '@fortawesome/free-brands-svg-icons'
+import { MapPin, Phone, Mail } from "lucide-react" // Mantenemos estos de Lucide porque no están tachados
+
 
 export default function Footer() {
   return (
@@ -11,7 +14,7 @@ export default function Footer() {
           <div>
             <div className="flex items-center gap-2 mb-6">
               <span className="text-2xl font-heading font-bold">
-                <span className="text-primary">VET</span>CARE
+                <span className="text-primary">VET</span> ZEUS
               </span>
             </div>
             <p className="text-gray-400 mb-6 leading-relaxed">
@@ -19,16 +22,27 @@ export default function Footer() {
               Atención ética, profesional y cercana para quienes son parte de tu familia.
             </p>
             <div className="flex gap-4">
-              <Button variant="ghost" size="icon" className="rounded-full bg-white/5 hover:bg-primary hover:text-white text-white">
-                <Facebook className="h-5 w-5" />
-              </Button>
-              <Button variant="ghost" size="icon" className="rounded-full bg-white/5 hover:bg-primary hover:text-white text-white">
-                <Instagram className="h-5 w-5" />
-              </Button>
-              <Button variant="ghost" size="icon" className="rounded-full bg-white/5 hover:bg-primary hover:text-white text-white">
-                <Twitter className="h-5 w-5" />
-              </Button>
-            </div>
+  {/* Botón Facebook */}
+  <Button asChild variant="ghost" size="icon" className="rounded-full bg-white/5 hover:bg-primary hover:text-white text-white">
+    <a href="https://www.facebook.com/junior.torreshinostroza" target="_blank" rel="noopener noreferrer">
+      <FontAwesomeIcon icon={faFacebookF} className="h-4 w-4" />
+    </a>
+  </Button>
+
+  {/* Botón Instagram */}
+  <Button asChild variant="ghost" size="icon" className="rounded-full bg-white/5 hover:bg-primary hover:text-white text-white">
+    <a href="https://www.facebook.com/junior.torreshinostroza" target="_blank" rel="noopener noreferrer">
+      <FontAwesomeIcon icon={faInstagram} className="h-4 w-4" />
+    </a>
+  </Button>
+
+  {/* Botón Twitter/X */}
+  <Button asChild variant="ghost" size="icon" className="rounded-full bg-white/5 hover:bg-primary hover:text-white text-white">
+    <a href="https://www.facebook.com/junior.torreshinostroza" target="_blank" rel="noopener noreferrer">
+      <FontAwesomeIcon icon={faXTwitter} className="h-4 w-4" />
+    </a>
+  </Button>
+</div>
           </div>
 
           {/* Quick Links */}
@@ -59,7 +73,7 @@ export default function Footer() {
               </li>
               <li className="flex items-center gap-3">
                 <Mail className="h-5 w-5 text-primary flex-shrink-0" />
-                <span className="text-gray-400">contacto@vetcare-zeus.com</span>
+                <span className="text-gray-400">contacto@veterinaria-zeus.com</span>
               </li>
             </ul>
           </div>
@@ -85,7 +99,7 @@ export default function Footer() {
         </div>
 
         <div className="border-t border-gray-800 pt-8 text-center text-gray-500 text-sm">
-          <p>© {new Date().getFullYear()} VetCare - Centro Veterinario Integral Zeus. Todos los derechos reservados.</p>
+          <p>© {new Date().getFullYear()} Vet-Zeus - Centro Veterinario Integral Zeus. Todos los derechos reservados.</p>
         </div>
       </div>
     </footer>
