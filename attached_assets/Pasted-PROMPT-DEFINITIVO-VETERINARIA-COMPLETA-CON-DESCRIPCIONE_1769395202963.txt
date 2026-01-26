@@ -1,0 +1,222 @@
+PROMPT DEFINITIVO – VETERINARIA COMPLETA CON DESCRIPCIONES
+
+Crea un sitio web moderno, confiable y funcional para “VETCARE – Centro Veterinario Integral Zeus”,
+una veterinaria dedicada al cuidado preventivo, diagnóstico, tratamiento y bienestar integral de mascotas, ofreciendo atención ética, profesional y cercana para perros, gatos y animales menores.
+
+El sitio debe transmitir confianza, calidez, profesionalismo médico y amor por los animales, con una arquitectura preparada para crecer, escalar y digitalizar procesos veterinarios.
+
+DISEÑO Y ESTÉTICA
+
+Paleta de colores
+
+Verde clínico #2E8B57 (salud y confianza)
+
+Azul suave #4DA3C7 (tranquilidad)
+
+Blanco #FFFFFF
+
+Gris claro #F2F4F6
+
+Verde lima #8BC34A (energía y vitalidad)
+
+Tipografía
+
+Títulos: Poppins / Montserrat
+
+Texto: Inter / Open Sans
+
+Estilo visual
+
+Diseño limpio, moderno y humano
+
+Fotografías reales de mascotas, atención clínica y equipo médico
+
+Animaciones suaves y elegantes
+
+Espacios amplios para una lectura cómoda
+
+HERO SECTION
+
+Imagen: Veterinario atendiendo a un perro y su dueño sonriendo
+Overlay: oscuro suave (35%)
+
+Título
+
+“Salud, cuidado y amor para quienes son parte de tu familia”
+
+Subtítulo
+
+“Atención veterinaria integral con profesionales certificados y tecnología moderna”
+
+Botones CTA
+
+“Agendar cita” (verde sólido)
+
+“Ver servicios” (outline)
+
+SOBRE NOSOTROS
+
+Descripción
+En VetCare creemos que cada mascota merece una vida larga, saludable y feliz.
+Nuestro centro veterinario nace con la misión de brindar atención médica de calidad, combinando experiencia profesional, tecnología clínica y un trato humano tanto para las mascotas como para sus familias.
+
+Trabajamos bajo principios de ética veterinaria, prevención, diagnóstico oportuno y acompañamiento continuo, asegurando que cada paciente reciba la atención adecuada según su condición y etapa de vida.
+
+Misión
+Brindar atención veterinaria integral, preventiva y especializada, enfocada en el bienestar físico y emocional de las mascotas.
+
+Visión
+Ser un centro veterinario de referencia por nuestra calidad médica, innovación y compromiso con la vida animal.
+
+Valores
+
+Amor y respeto por los animales
+
+Profesionalismo
+
+Responsabilidad médica
+
+Honestidad
+
+Vocación de servicio
+
+Estadísticas
+
++10 años de experiencia
+
++8,000 mascotas atendidas
+
+5 veterinarios especializados
+
+Atención de emergencias
+
+SERVICIOS VETERINARIOS
+Consulta General
+
+Evaluación clínica completa para detectar, prevenir y tratar enfermedades, asegurando el bienestar general de tu mascota.
+
+Vacunación
+
+Programas de vacunación personalizados según especie, edad y estilo de vida, cumpliendo protocolos oficiales.
+
+Desparasitación
+
+Tratamientos internos y externos para prevenir parásitos que afectan la salud de tu mascota y la familia.
+
+Cirugía Veterinaria
+
+Procedimientos quirúrgicos seguros con monitoreo constante, anestesia controlada y recuperación supervisada.
+
+Emergencias 24/7
+
+Atención inmediata para situaciones críticas, accidentes o enfermedades repentinas.
+
+Laboratorio Clínico
+
+Análisis de sangre, orina y pruebas rápidas para diagnósticos precisos y oportunos.
+
+Ecografías y Rayos X
+
+Diagnóstico por imágenes con equipos modernos para detectar patologías internas.
+
+Grooming (Baño y Corte)
+
+Cuidado estético y sanitario para mantener a tu mascota limpia, saludable y feliz.
+
+Farmacia Veterinaria
+
+Medicamentos certificados, antiparasitarios, suplementos y productos especializados.
+
+Nutrición y Bienestar
+
+Asesoría nutricional personalizada según edad, peso y condiciones médicas.
+
+SISTEMA DE CITAS ONLINE
+
+Descripción
+Reserva fácilmente una cita desde cualquier dispositivo. Nuestro sistema permite agendar consultas, servicios y controles médicos de forma rápida y segura.
+
+Campos
+
+Tipo de servicio
+
+Fecha y hora
+
+Nombre del dueño
+
+Nombre de la mascota
+
+Especie
+
+Teléfono
+
+Email
+
+Observaciones
+
+Confirmación
+Mensaje automático de confirmación y recordatorio.
+
+ESPECIALISTAS
+
+Descripción
+Nuestro equipo está conformado por médicos veterinarios colegiados, con formación continua y amplia experiencia en medicina animal.
+
+Cada profesional se especializa en diferentes áreas, garantizando una atención integral y especializada para cada paciente.
+
+GALERÍA
+
+Descripción
+Momentos reales de atención, cuidado y recuperación de nuestros pacientes, reflejando el compromiso y la dedicación de nuestro equipo veterinario.
+
+TESTIMONIOS
+
+Descripción
+La confianza de nuestros clientes nos respalda. Cada testimonio refleja nuestro compromiso con la salud y bienestar de las mascotas.
+
+Ejemplo:
+
+“Gracias a VetCare mi perrito recibió atención inmediata y hoy está completamente recuperado. Excelente trato y profesionales.”
+
+UBICACIÓN Y CONTACTO
+
+Descripción
+Visítanos en nuestras instalaciones totalmente equipadas para brindarte la mejor atención veterinaria.
+
+Dirección completa
+
+Teléfono
+
+WhatsApp
+
+Email
+
+Horarios de atención
+
+FOOTER
+
+Descripción
+VetCare – Centro Veterinario Integral
+Comprometidos con la salud y felicidad de tus mascotas.
+
+CARACTERÍSTICAS TÉCNICAS
+
+Diseño responsive
+
+Optimización SEO
+
+Carga rápida
+
+Formularios validados
+
+Arquitectura escalable
+
+Preparado para:
+
+Historias clínicas digitales
+
+Tienda online
+
+Panel administrativo
+
+Múltiples sedes
