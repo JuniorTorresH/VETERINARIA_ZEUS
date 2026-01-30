@@ -13,13 +13,16 @@ export const users = pgTable("users", {
 });
 
 export const insertUserSchema = createInsertSchema(users).pick({
+  id: true,
   username: true,
   password: true,
   email: true,
   phone: true,
   role: true,
-
+}).extend({
+  id: z.string().optional(),
 });
+
 
 export type InsertUser = z.infer<typeof insertUserSchema>;
 export type User = typeof users.$inferSelect;
