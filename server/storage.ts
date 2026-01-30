@@ -50,7 +50,7 @@ export class DatabaseStorage implements IStorage {
     }
   }
 
-  async createUser(insertUser: InsertUser): Promise<User> {
+  async createUser(insertUser: any): Promise<User> {
     try {
       console.log(`Inserting new user: ${insertUser.username}`);
       const [user] = await db.insert(users).values(insertUser).returning();
@@ -74,3 +74,5 @@ export class DatabaseStorage implements IStorage {
 }
 
 export const storage = new DatabaseStorage();
+
+

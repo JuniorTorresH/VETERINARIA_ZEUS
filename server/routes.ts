@@ -1,7 +1,7 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage.js";
-import { insertAppointmentSchema, User } from "../shared/schema.js";
+import { insertAppointmentSchema } from "../shared/schema.js";
 import { z } from "zod";
 
 export async function registerRoutes(
@@ -15,7 +15,7 @@ export async function registerRoutes(
   // e.g. storage.insertUser(user) or storage.getUserByUsername(username)
 
   app.post("/api/appointments", async (req, res) => {
-    if (!req.isAuthenticated()) {
+    if (!(req as any).isAuthenticated()) {
       return res.status(401).json({ message: "Debes iniciar sesión para agendar una cita" });
     }
 
@@ -24,7 +24,7 @@ export async function registerRoutes(
 
       const appointment = await storage.createAppointment({
         ...appointmentData,
-        userId: (req.user as User).id,
+        userId: (req as any).user.id,
       });
       res.status(201).json(appointment);
     } catch (error) {
@@ -36,6 +36,7 @@ export async function registerRoutes(
       }
     }
   });
+
 
   return httpServer;
 }

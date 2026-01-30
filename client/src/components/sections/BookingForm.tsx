@@ -24,6 +24,8 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { Calendar } from "@/components/ui/calendar";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/hooks/use-auth";
+import { useEffect } from "react";
+
 
 
 const formSchema = z.object({
@@ -34,6 +36,7 @@ const formSchema = z.object({
   email: z.string().email({ message: "Email inválido." }),
   phone: z.string().min(8, { message: "Teléfono requerido." }),
   date: z.date({ required_error: "Selecciona una fecha." }),
+  time: z.string().min(1, { message: "Selecciona una hora." }),
   notes: z.string().optional(),
 });
 
@@ -44,40 +47,56 @@ export default function BookingForm() {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      ownerName: "",
+      ownerName: user?.username || "",
       petName: "",
-      email: "",
-      phone: "",
+      email: user?.email || "",
+      phone: user?.phone || "",
       notes: "",
+      time: "",
     },
   });
+
+  // Update form fields when user changes
+
+  useEffect(() => {
+    if (user) {
+      form.setValue("ownerName", user.username);
+      form.setValue("email", user.email);
+      form.setValue("phone", user.phone);
+    }
+  }, [user, form]);
+
 
   const [, setLocation] = useLocation();
 
   const mutation = useMutation({
     mutationFn: async (values: z.infer<typeof formSchema>) => {
-      // Map form values to API schema
+      // Map form values to the new API schema
       const payload = {
-        customerName: values.ownerName,
-        petName: values.petName,
-        species: values.species,
-        serviceType: values.serviceType,
-        email: values.email,
-        phone: values.phone,
-        preferredDate: values.date.toISOString(),
-        observations: values.notes,
+        nombreMascota: values.petName,
+        servicio: values.serviceType,
+        fecha: format(values.date, "yyyy-MM-dd"),
+        hora: values.time,
+        mensaje: values.notes,
       };
       const res = await apiRequest("POST", "/api/appointments", payload);
+      if (!res.ok) throw new Error("Failed to save appointment");
       return await res.json();
     },
     onSuccess: (data) => {
       toast({
         title: "¡Cita agendada con éxito!",
-        // Use preferredDate from the response
-        description: `Te esperamos el ${format(new Date(data.preferredDate), "PPP", { locale: es })}. Hemos enviado un correo de confirmación.`,
+        description: `Te esperamos el ${format(new Date(data.fecha + 'T12:00:00'), "PPP", { locale: es })} a las ${data.hora}.`,
         duration: 5000,
       });
-      form.reset();
+      form.reset({
+        ownerName: user?.username || "",
+        email: user?.email || "",
+        phone: user?.phone || "",
+        petName: "",
+        notes: "",
+        time: "",
+      });
     },
     onError: (error: any) => {
       if (error.status === 401) {
@@ -179,7 +198,7 @@ export default function BookingForm() {
                           <FormItem>
                             <FormLabel>Tu Nombre</FormLabel>
                             <FormControl>
-                              <Input placeholder="Juan Pérez" {...field} />
+                              <Input placeholder="Juan Pérez" {...field} disabled={!!user} />
                             </FormControl>
                             <FormMessage />
                           </FormItem>
@@ -231,7 +250,7 @@ export default function BookingForm() {
                           <FormItem>
                             <FormLabel>Teléfono</FormLabel>
                             <FormControl>
-                              <Input placeholder="999 999 999" {...field} />
+                              <Input placeholder="999 999 999" {...field} disabled={!!user} />
                             </FormControl>
                             <FormMessage />
                           </FormItem>
@@ -246,7 +265,7 @@ export default function BookingForm() {
                         <FormItem>
                           <FormLabel>Email</FormLabel>
                           <FormControl>
-                            <Input placeholder="correo@ejemplo.com" {...field} />
+                            <Input placeholder="correo@ejemplo.com" {...field} disabled={!!user} />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
@@ -322,6 +341,29 @@ export default function BookingForm() {
 
                     <FormField
                       control={form.control}
+                      name="time"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Hora Preferida</FormLabel>
+                          <Select onValueChange={field.onChange} defaultValue={field.value}>
+                            <FormControl>
+                              <SelectTrigger>
+                                <SelectValue placeholder="Seleccionar hora" />
+                              </SelectTrigger>
+                            </FormControl>
+                            <SelectContent>
+                              {["08:00", "09:00", "10:00", "11:00", "12:00", "14:00", "15:00", "16:00", "17:00", "18:00", "19:00"].map((h) => (
+                                <SelectItem key={h} value={h}>{h}</SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    <FormField
+                      control={form.control}
                       name="notes"
                       render={({ field }) => (
                         <FormItem>
@@ -358,3 +400,4 @@ export default function BookingForm() {
     </section>
   );
 }
+

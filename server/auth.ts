@@ -1,26 +1,8 @@
-import passport from "passport";
-import { Strategy as LocalStrategy } from "passport-local";
 import { Express } from "express";
 import session from "express-session";
-import { scrypt, randomBytes, timingSafeEqual } from "crypto";
-import { promisify } from "util";
 import { storage } from "./storage.js";
 import { User } from "../shared/schema.js";
-
-const scryptAsync = promisify(scrypt);
-
-async function hashPassword(password: string) {
-    const salt = randomBytes(16).toString("hex");
-    const buf = (await scryptAsync(password, salt, 64)) as Buffer;
-    return `${buf.toString("hex")}.${salt}`;
-}
-
-async function comparePasswords(supplied: string, stored: string) {
-    const [hashed, salt] = stored.split(".");
-    const hashedPasswordBuf = Buffer.from(hashed, "hex");
-    const suppliedPasswordBuf = (await scryptAsync(supplied, salt, 64)) as Buffer;
-    return timingSafeEqual(hashedPasswordBuf, suppliedPasswordBuf);
-}
+import { supabase } from "./db.js";
 
 export function setupAuth(app: Express) {
     const sessionSettings: session.SessionOptions = {
@@ -30,7 +12,7 @@ export function setupAuth(app: Express) {
         store: storage.sessionStore,
         rolling: true,
         cookie: {
-            maxAge: 20 * 60 * 1000, // 20 minutes
+            maxAge: 24 * 60 * 60 * 1000, // 24 hours
             secure: app.get("env") === "production",
         },
     };
@@ -40,93 +22,105 @@ export function setupAuth(app: Express) {
     }
 
     app.use(session(sessionSettings));
-    app.use(passport.initialize());
-    app.use(passport.session());
 
-    passport.use(
-        new LocalStrategy(async (username, password, done) => {
+    // Custom middleware to handle user in request
+    app.use(async (req, res, next) => {
+        if (req.session && (req.session as any).userId) {
             try {
-                const user = await storage.getUserByUsername(username);
-                if (!user || !(await comparePasswords(password, user.password))) {
-                    return done(null, false);
-                } else {
-                    return done(null, user);
-                }
+                const user = await storage.getUser((req.session as any).userId);
+                (req as any).user = user;
             } catch (err) {
-                return done(err);
+                console.error("Session user retrieval error:", err);
             }
-        }),
-    );
-
-    passport.serializeUser((user, done) => done(null, (user as User).id));
-    passport.deserializeUser(async (id: string, done) => {
-        try {
-            const user = await storage.getUser(id);
-            done(null, user);
-        } catch (err) {
-            done(err);
         }
+        (req as any).isAuthenticated = () => !!(req as any).user;
+        next();
     });
 
-    app.post("/api/register", async (req, res, next) => {
+    app.post("/api/register", async (req, res) => {
         try {
             const { username, password, email, phone, role } = req.body;
-            console.log(`Registration attempt for username: ${username}, email: ${email}`);
+            console.log(`Registration attempt for email: ${email}`);
 
-            const existingUser = await storage.getUserByUsername(username);
-            if (existingUser) {
-                return res.status(400).send("El usuario ya existe");
-            }
-
-            const hashedPassword = await hashPassword(password);
-            const user = await storage.createUser({
-                username,
-                password: hashedPassword,
+            const { data, error } = await supabase.auth.signUp({
                 email,
-                phone,
-                role: role || "user"
+                password,
             });
 
+            if (error) {
+                console.error("Supabase signUp error:", error);
+                return res.status(error.status || 400).json({ message: error.message });
+            }
+
+            if (!data.user) {
+                return res.status(400).json({ message: "Error al crear el usuario" });
+            }
+
+            // Insert into public.users table (profiles)
+            // Fix: Check if user already exists to avoid PK conflict
+            const existing = await storage.getUser(data.user.id);
+            if (!existing) {
+                await storage.createUser({
+                    id: data.user.id,
+                    username,
+                    email,
+                    phone,
+                    role: role || "user"
+                });
+            }
+
+            const user = await storage.getUser(data.user.id);
+            (req.session as any).userId = data.user.id;
             res.status(201).json(user);
         } catch (err) {
-            next(err);
+            console.error("Registration error:", err);
+            res.status(500).json({ message: "Error interno en el registro" });
         }
     });
 
-    app.post("/api/login", (req, res, next) => {
-        console.log(`Login attempt for username: ${req.body.username}`);
-        passport.authenticate("local", (err: any, user: any, info: any) => {
-            if (err) {
-                console.error("Passport authentication error:", err);
-                return next(err);
-            }
-            if (!user) {
-                console.log("Authentication failed:", info?.message || "Invalid credentials");
-                return res.status(401).json({ message: info?.message || "Credenciales inválidas" });
-            }
-            req.login(user, (err) => {
-                if (err) {
-                    console.error("req.login error:", err);
-                    return next(err);
-                }
-                console.log(`Login successful for user: ${user.username}`);
-                return res.status(200).json(user);
+    app.post("/api/login", async (req, res) => {
+        try {
+            const { email, password } = req.body;
+            console.log(`Login attempt for email: ${email}`);
+
+            const { data, error } = await supabase.auth.signInWithPassword({
+                email,
+                password,
             });
-        })(req, res, next);
+
+            if (error) {
+                console.log("Authentication failed:", error.message);
+                return res.status(401).json({ message: "Credenciales inválidas" });
+            }
+
+            if (!data.user) {
+                return res.status(401).json({ message: "Usuario no encontrado" });
+            }
+
+            const user = await storage.getUser(data.user.id);
+            if (!user) {
+                return res.status(401).json({ message: "Perfil de usuario no encontrado" });
+            }
+
+            (req.session as any).userId = data.user.id;
+            console.log(`Login successful for user: ${user.username}`);
+            return res.status(200).json(user);
+        } catch (err) {
+            console.error("Login error:", err);
+            res.status(500).json({ message: "Error interno en el login" });
+        }
     });
 
-    app.post("/api/logout", (req, res, next) => {
-        req.logout((err) => {
-            if (err) return next(err);
-            req.session.destroy((err) => {
-                if (err) return next(err);
-                res.sendStatus(200);
-            });
+    app.post("/api/logout", (req, res) => {
+        req.session.destroy((err) => {
+            if (err) return res.status(500).send("Error al cerrar sesión");
+            res.sendStatus(200);
         });
     });
 
     app.get("/api/user", (req, res) => {
-        if (!req.isAuthenticated()) return res.sendStatus(401);
-        res.json(req.user);
+        if (!(req as any).isAuthenticated()) return res.sendStatus(401);
+        res.json((req as any).user);
     });
 }
+
