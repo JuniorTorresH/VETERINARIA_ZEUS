@@ -97,10 +97,18 @@ export default function Navbar() {
               {user ? (
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
-                    <Button variant="ghost" className="flex items-center gap-2 px-2 hover:bg-gray-100">
-                      <UserIcon className="h-5 w-5" />
-                      <span className="text-sm font-normal">Hola, {user.username}</span>
-                    </Button>
+                    <div className={cn(
+                      "flex items-center gap-2 transition-colors duration-300 group cursor-pointer",
+                      scrolled ? "text-emerald-950 hover:text-emerald-800" : "text-white hover:text-white/80"
+                    )}>
+                      <div className={cn(
+                        "p-1 rounded-full transition-colors duration-300",
+                        scrolled ? "group-hover:bg-emerald-950/10" : "group-hover:bg-white/10"
+                      )}>
+                        <UserCircle className="w-6 h-6" />
+                      </div>
+                      <span className="text-base font-bold">Hola, {user.username}</span>
+                    </div>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end" className="absolute right-0 top-full mt-2 w-56 bg-white shadow-xl border border-gray-100 z-[100]">
                     <DropdownMenuItem className="cursor-pointer text-[#000000] font-extrabold hover:bg-gray-100 focus:text-black">

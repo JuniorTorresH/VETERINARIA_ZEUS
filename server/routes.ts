@@ -15,7 +15,10 @@ export async function registerRoutes(
   // e.g. storage.insertUser(user) or storage.getUserByUsername(username)
 
   app.post("/api/appointments", async (req, res) => {
-    if (!req.isAuthenticated()) return res.sendStatus(401);
+    if (!req.isAuthenticated()) {
+      return res.status(401).json({ message: "Debes iniciar sesión para agendar una cita" });
+    }
+
     try {
       const appointmentData = insertAppointmentSchema.parse(req.body);
 
@@ -23,11 +26,12 @@ export async function registerRoutes(
         ...appointmentData,
         userId: (req.user as User).id,
       });
-      res.json(appointment);
+      res.status(201).json(appointment);
     } catch (error) {
       if (error instanceof z.ZodError) {
         res.status(400).json({ message: "Datos inválidos", errors: error.errors });
       } else {
+        console.error("Error creating appointment:", error);
         res.status(500).json({ message: "Error al guardar la cita" });
       }
     }

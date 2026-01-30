@@ -6,7 +6,6 @@ import { serveStatic } from "./static";
 import { createServer } from "http";
 
 const app = express();
-const httpServer = createServer(app);
 
 declare module "http" {
   interface IncomingMessage {
@@ -61,9 +60,10 @@ app.use((req, res, next) => {
   next();
 });
 
-(async () => {
+// Initialization function to be called before handling requests
+async function initializeServer() {
   setupAuth(app);
-
+  const httpServer = createServer(app);
   await registerRoutes(httpServer, app);
 
   app.use((err: any, _req: Request, res: Response, next: NextFunction) => {
@@ -79,9 +79,6 @@ app.use((req, res, next) => {
     return res.status(status).json({ message });
   });
 
-  // importantly only setup vite in development and after
-  // setting up all the other routes so the catch-all route
-  // doesn't interfere with the other routes
   if (process.env.NODE_ENV === "production") {
     serveStatic(app);
   } else {
@@ -89,12 +86,22 @@ app.use((req, res, next) => {
     await setupVite(httpServer, app);
   }
 
-  // ALWAYS serve the app on the port specified in the environment variable PORT
-  // Other ports are firewalled. Default to 5000 if not specified.
-  // this serves both the API and the client.
-  // It is the only port that is not firewalled.
-  const port = parseInt(process.env.PORT || "5000", 10);
-  httpServer.listen(port, "127.0.0.1", () => {
-    console.log(`Servidor corriendo en http://localhost:${port}`);
+  return httpServer;
+}
+
+// Export the app for Vercel
+export default app;
+
+// For local development
+if (process.env.NODE_ENV !== "production" || !process.env.VERCEL) {
+  initializeServer().then((httpServer) => {
+    const port = parseInt(process.env.PORT || "5000", 10);
+    httpServer.listen(port, "0.0.0.0", () => {
+      log(`Servidor corriendo en http://0.0.0.0:${port}`);
+    });
   });
-})();
+} else {
+  // On Vercel, we still need to run the initialization (routes registration)
+  // but we don't call .listen()
+  initializeServer();
+}

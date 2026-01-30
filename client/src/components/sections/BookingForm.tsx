@@ -79,12 +79,21 @@ export default function BookingForm() {
       });
       form.reset();
     },
-    onError: (error) => {
-      toast({
-        title: "Error",
-        description: "Hubo un problema al agendar la cita. Por favor intenta nuevamente.",
-        variant: "destructive",
-      });
+    onError: (error: any) => {
+      if (error.status === 401) {
+        toast({
+          title: "Sesión expirada",
+          description: "Debes iniciar sesión para agendar una cita.",
+          variant: "destructive",
+        });
+        setLocation("/auth");
+      } else {
+        toast({
+          title: "Error",
+          description: "Hubo un problema al agendar la cita. Por favor intenta nuevamente.",
+          variant: "destructive",
+        });
+      }
     },
   });
 
@@ -92,7 +101,7 @@ export default function BookingForm() {
     if (!user) {
       toast({
         title: "Inicia sesión",
-        description: "Para confirmar tu cita, necesitas identificarte.",
+        description: "Debes iniciar sesión para agendar una cita.",
         variant: "default",
       });
       setLocation("/auth");
