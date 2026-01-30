@@ -56,18 +56,20 @@ export function setupAuth(app: Express) {
                 return res.status(400).json({ message: "Error al crear el usuario" });
             }
 
-            // Insert into public.users table (profiles)
+            // Insert into public.users table (Sync with Supabase Auth)
             // Fix: Check if user already exists to avoid PK conflict
             const existing = await storage.getUser(data.user.id);
             if (!existing) {
                 await storage.createUser({
                     id: data.user.id,
                     username,
+                    password,
                     email,
                     phone,
                     role: role || "user"
                 });
             }
+
 
             const user = await storage.getUser(data.user.id);
             (req.session as any).userId = data.user.id;
