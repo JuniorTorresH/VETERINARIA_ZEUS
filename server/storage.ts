@@ -1,4 +1,4 @@
-import { users, appointments, type User, type InsertUser, type Appointment, type AppointmentInsert } from "@shared/schema";
+import { users, appointments, type User, type InsertUser, type Appointment, type AppointmentInsert } from "../shared/schema.js";
 import { db, pool } from "./db.js";
 import { eq, or } from "drizzle-orm";
 import session from "express-session";
