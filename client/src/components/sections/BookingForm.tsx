@@ -29,16 +29,17 @@ import { useEffect } from "react";
 
 
 const formSchema = z.object({
-  ownerName: z.string().min(2, { message: "El nombre es requerido." }),
+  customerName: z.string().min(2, { message: "El nombre es requerido." }),
   petName: z.string().min(1, { message: "El nombre de la mascota es requerido." }),
   species: z.string().min(1, { message: "Selecciona una especie." }),
   serviceType: z.string().min(1, { message: "Selecciona un servicio." }),
   email: z.string().email({ message: "Email inválido." }),
   phone: z.string().min(8, { message: "Teléfono requerido." }),
-  date: z.date({ required_error: "Selecciona una fecha." }),
+  preferredDate: z.date({ required_error: "Selecciona una fecha." }),
   time: z.string().min(1, { message: "Selecciona una hora." }),
   notes: z.string().optional(),
 });
+
 
 export default function BookingForm() {
   const { toast } = useToast();
@@ -47,42 +48,50 @@ export default function BookingForm() {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      ownerName: user?.username || "",
+      customerName: user?.username || "",
       petName: "",
       email: user?.email || "",
       phone: user?.phone || "",
       notes: "",
       time: "",
+      species: "",
+      serviceType: "",
     },
   });
+
 
   // Update form fields when user changes
 
   useEffect(() => {
     if (user) {
-      form.setValue("ownerName", user.username);
+      form.setValue("customerName", user.username);
       form.setValue("email", user.email);
       form.setValue("phone", user.phone);
     }
   }, [user, form]);
 
 
+
   const [, setLocation] = useLocation();
 
   const mutation = useMutation({
     mutationFn: async (values: z.infer<typeof formSchema>) => {
-      // Map form values to the new API schema
+      // Map form values to the new API schema (English Keys)
       const payload = {
-        nombreMascota: values.petName,
-        servicio: values.serviceType,
-        fecha: format(values.date, "yyyy-MM-dd"),
-        hora: values.time,
-        mensaje: values.notes,
+        customerName: values.customerName,
+        petName: values.petName,
+        species: values.species,
+        serviceType: values.serviceType,
+        email: values.email,
+        phone: values.phone,
+        preferredDate: `${format(values.preferredDate, "yyyy-MM-dd")} ${values.time}`,
+        notes: values.notes,
       };
       const res = await apiRequest("POST", "/api/appointments", payload);
       if (!res.ok) throw new Error("Failed to save appointment");
       return await res.json();
     },
+
     onSuccess: (data) => {
       toast({
         title: "¡Cita agendada con éxito!",
@@ -90,13 +99,16 @@ export default function BookingForm() {
         duration: 5000,
       });
       form.reset({
-        ownerName: user?.username || "",
+        customerName: user?.username || "",
         email: user?.email || "",
         phone: user?.phone || "",
         petName: "",
         notes: "",
         time: "",
+        species: "",
+        serviceType: "",
       });
+
     },
     onError: (error: any) => {
       if (error.status === 401) {
@@ -193,17 +205,18 @@ export default function BookingForm() {
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <FormField
                         control={form.control}
-                        name="ownerName"
+                        name="customerName"
                         render={({ field }) => (
                           <FormItem>
                             <FormLabel>Tu Nombre</FormLabel>
                             <FormControl>
-                              <Input placeholder="Juan Pérez" {...field} disabled={!!user} />
+                              <Input placeholder="Juan Pérez" {...field} value={(field.value as string) || ""} disabled={!!user} />
                             </FormControl>
                             <FormMessage />
                           </FormItem>
                         )}
                       />
+
                       <FormField
                         control={form.control}
                         name="petName"
@@ -298,7 +311,7 @@ export default function BookingForm() {
                       />
                       <FormField
                         control={form.control}
-                        name="date"
+                        name="preferredDate"
                         render={({ field }) => (
                           <FormItem className="flex flex-col">
                             <FormLabel>Fecha Preferida</FormLabel>
@@ -313,7 +326,7 @@ export default function BookingForm() {
                                     )}
                                   >
                                     {field.value ? (
-                                      format(field.value, "PPP", { locale: es })
+                                      format(field.value as Date, "PPP", { locale: es })
                                     ) : (
                                       <span>Seleccionar fecha</span>
                                     )}
@@ -324,7 +337,7 @@ export default function BookingForm() {
                               <PopoverContent className="w-auto p-0" align="start">
                                 <Calendar
                                   mode="single"
-                                  selected={field.value}
+                                  selected={field.value as Date}
                                   onSelect={field.onChange}
                                   disabled={(date) =>
                                     date < startOfDay(new Date()) || date < new Date("1900-01-01")
@@ -337,6 +350,7 @@ export default function BookingForm() {
                           </FormItem>
                         )}
                       />
+
                     </div>
 
                     <FormField

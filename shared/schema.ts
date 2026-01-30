@@ -26,21 +26,28 @@ export type User = typeof users.$inferSelect;
 export const appointments = pgTable("appointments", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
   userId: text("user_id").references(() => users.id).notNull(),
-  nombreMascota: text("nombre_mascota").notNull(),
-  servicio: text("servicio").notNull(),
-  fecha: text("fecha").notNull(),
-  hora: text("hora").notNull(),
-  mensaje: text("mensaje"),
+  customerName: text("customer_name").notNull(),
+  petName: text("pet_name").notNull(),
+  species: text("species").notNull(),
+  serviceType: text("service_type").notNull(),
+  email: text("email").notNull(),
+  phone: text("phone").notNull(),
+  preferredDate: text("preferred_date").notNull(),
+  notes: text("notes"),
   createdAt: text("created_at").default(sql`CURRENT_TIMESTAMP`),
 });
 
 export const insertAppointmentSchema = createInsertSchema(appointments).pick({
-  nombreMascota: true,
-  servicio: true,
-  fecha: true,
-  hora: true,
-  mensaje: true,
+  customerName: true,
+  petName: true,
+  species: true,
+  serviceType: true,
+  email: true,
+  phone: true,
+  preferredDate: true,
+  notes: true,
 });
+
 
 export type InsertAppointment = z.infer<typeof insertAppointmentSchema>;
 export type Appointment = typeof appointments.$inferSelect;
