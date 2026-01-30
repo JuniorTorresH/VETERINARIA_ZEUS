@@ -19,7 +19,7 @@
       "destination": "/server/index.ts"
     },
     {
-      "source": "/((?!api).* )",
+      "source": "/((?!api).*)",
       "destination": "/index.html"
     }
   ]
