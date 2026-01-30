@@ -71,6 +71,7 @@ export function setupAuth(app: Express) {
     app.post("/api/register", async (req, res, next) => {
         try {
             const { username, password, email, phone, role } = req.body;
+            console.log(`Registration attempt for username: ${username}, email: ${email}`);
 
             const existingUser = await storage.getUserByUsername(username);
             if (existingUser) {
@@ -92,8 +93,26 @@ export function setupAuth(app: Express) {
         }
     });
 
-    app.post("/api/login", passport.authenticate("local"), (req, res) => {
-        res.status(200).json(req.user);
+    app.post("/api/login", (req, res, next) => {
+        console.log(`Login attempt for username: ${req.body.username}`);
+        passport.authenticate("local", (err: any, user: any, info: any) => {
+            if (err) {
+                console.error("Passport authentication error:", err);
+                return next(err);
+            }
+            if (!user) {
+                console.log("Authentication failed:", info?.message || "Invalid credentials");
+                return res.status(401).json({ message: info?.message || "Credenciales inválidas" });
+            }
+            req.login(user, (err) => {
+                if (err) {
+                    console.error("req.login error:", err);
+                    return next(err);
+                }
+                console.log(`Login successful for user: ${user.username}`);
+                return res.status(200).json(user);
+            });
+        })(req, res, next);
     });
 
     app.post("/api/logout", (req, res, next) => {

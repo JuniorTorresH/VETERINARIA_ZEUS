@@ -67,40 +67,57 @@ let isInitialized = false;
 async function initializeServer() {
   if (isInitialized) return;
 
-  setupAuth(app);
-  const httpServer = createServer(app);
-  await registerRoutes(httpServer, app);
+  try {
+    log("Initializing server components...");
+    setupAuth(app);
+    const httpServer = createServer(app);
+    await registerRoutes(httpServer, app);
 
-  app.use((err: any, _req: Request, res: Response, next: NextFunction) => {
-    const status = err.status || err.statusCode || 500;
-    const message = err.message || "Internal Server Error";
+    app.use((err: any, _req: Request, res: Response, next: NextFunction) => {
+      const status = err.status || err.statusCode || 500;
+      const message = err.message || "Internal Server Error";
 
-    console.error("Internal Server Error:", err);
+      console.error("Express Error Handler:", err);
 
-    if (res.headersSent) {
-      return next(err);
+      if (res.headersSent) {
+        return next(err);
+      }
+
+      return res.status(status).json({ message, stack: process.env.NODE_ENV === 'development' ? err.stack : undefined });
+    });
+
+    if (process.env.NODE_ENV === "production") {
+      serveStatic(app);
+    } else {
+      const { setupVite } = await import("./vite.js");
+      await setupVite(httpServer, app);
     }
 
-    return res.status(status).json({ message });
-  });
-
-  if (process.env.NODE_ENV === "production") {
-    serveStatic(app);
-  } else {
-    const { setupVite } = await import("./vite.js");
-    await setupVite(httpServer, app);
+    isInitialized = true;
+    log("Server components initialized successfully.");
+    return httpServer;
+  } catch (error) {
+    console.error("Critical Server Initialization Error:", error);
+    isInitialized = false;
+    throw error;
   }
-
-  isInitialized = true;
-  return httpServer;
 }
 
 // Middleware to ensure initialization on Vercel
 app.use(async (req, res, next) => {
   if (process.env.VERCEL && !isInitialized) {
-    await initializeServer();
+    try {
+      await initializeServer();
+      next();
+    } catch (error) {
+      res.status(500).json({
+        message: "Failed to initialize server. Check logs for details.",
+        error: error instanceof Error ? error.message : String(error)
+      });
+    }
+  } else {
+    next();
   }
-  next();
 });
 
 // Export the app for Vercel

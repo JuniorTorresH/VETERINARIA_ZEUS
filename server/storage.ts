@@ -21,6 +21,7 @@ export class DatabaseStorage implements IStorage {
   sessionStore: session.Store;
 
   constructor() {
+    console.log("Initializing PostgresSessionStore...");
     this.sessionStore = new PostgresSessionStore({
       pool,
       createTableIfMissing: true,
@@ -28,23 +29,47 @@ export class DatabaseStorage implements IStorage {
   }
 
   async getUser(id: string): Promise<User | undefined> {
-    const [user] = await db.select().from(users).where(eq(users.id, id));
-    return user;
+    try {
+      console.log(`Querying user by id: ${id}`);
+      const [user] = await db.select().from(users).where(eq(users.id, id));
+      return user;
+    } catch (error) {
+      console.error(`Error in getUser(${id}):`, error);
+      throw error;
+    }
   }
 
   async getUserByUsername(username: string): Promise<User | undefined> {
-    const [user] = await db.select().from(users).where(or(eq(users.username, username), eq(users.email, username)));
-    return user;
+    try {
+      console.log(`Querying user by username/email: ${username}`);
+      const [user] = await db.select().from(users).where(or(eq(users.username, username), eq(users.email, username)));
+      return user;
+    } catch (error) {
+      console.error(`Error in getUserByUsername(${username}):`, error);
+      throw error;
+    }
   }
 
   async createUser(insertUser: InsertUser): Promise<User> {
-    const [user] = await db.insert(users).values(insertUser).returning();
-    return user;
+    try {
+      console.log(`Inserting new user: ${insertUser.username}`);
+      const [user] = await db.insert(users).values(insertUser).returning();
+      return user;
+    } catch (error) {
+      console.error("Error in createUser:", error);
+      throw error;
+    }
   }
 
   async createAppointment(insertAppointment: AppointmentInsert): Promise<Appointment> {
-    const [appointment] = await db.insert(appointments).values(insertAppointment).returning();
-    return appointment;
+    try {
+      console.log("Inserting new appointment...");
+      const [appointment] = await db.insert(appointments).values(insertAppointment).returning();
+      return appointment;
+    } catch (error) {
+      console.error("Error in createAppointment:", error);
+      throw error;
+    }
   }
 }
 
