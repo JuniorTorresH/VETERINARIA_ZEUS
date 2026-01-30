@@ -22,7 +22,8 @@ export const services = [
         ],
         price: "50.00",
         icon: Stethoscope,
-        color: "bg-blue-100 text-blue-600"
+        color: "bg-blue-100 text-blue-600",
+        imageUrl: "https://images.unsplash.com/photo-1629909613654-28e377c37b09?q=80&w=2068&auto=format&fit=crop"
     },
     {
         id: "vacunacion",
@@ -35,7 +36,8 @@ export const services = [
         ],
         price: "45.00",
         icon: Syringe,
-        color: "bg-green-100 text-green-600"
+        color: "bg-green-100 text-green-600",
+        imageUrl: "https://images.unsplash.com/photo-1583336663277-620dc1996580?q=80&w=2069&auto=format&fit=crop"
     },
     {
         id: "desparasitacion",
@@ -48,7 +50,8 @@ export const services = [
         ],
         price: "25.00",
         icon: ShieldCheck,
-        color: "bg-purple-100 text-purple-600"
+        color: "bg-purple-100 text-purple-600",
+        imageUrl: "https://images.unsplash.com/photo-1599443015574-be5fe8a05783?q=80&w=2070&auto=format&fit=crop"
     },
     {
         id: "cirugia-veterinaria",
@@ -61,7 +64,8 @@ export const services = [
         ],
         price: "Consultar",
         icon: Scissors,
-        color: "bg-red-100 text-red-600"
+        color: "bg-red-100 text-red-600",
+        imageUrl: "https://images.unsplash.com/photo-1584132967334-10e028bd69f7?q=80&w=2000&auto=format&fit=crop"
     },
     {
         id: "emergencias-24-7",
@@ -74,7 +78,8 @@ export const services = [
         ],
         price: "Desde 80.00",
         icon: Ambulance,
-        color: "bg-orange-100 text-orange-600"
+        color: "bg-orange-100 text-orange-600",
+        imageUrl: "https://images.unsplash.com/photo-1535930749574-1399327ce78f?q=80&w=1936&auto=format&fit=crop"
     },
     {
         id: "laboratorio-clinico",
@@ -87,7 +92,8 @@ export const services = [
         ],
         price: "Desde 35.00",
         icon: FlaskConical,
-        color: "bg-teal-100 text-teal-600"
+        color: "bg-teal-100 text-teal-600",
+        imageUrl: "https://images.unsplash.com/photo-1579154204601-01588f351e67?q=80&w=2070&auto=format&fit=crop"
     },
     {
         id: "ecografias-rayos-x",
@@ -100,7 +106,8 @@ export const services = [
         ],
         price: "60.00",
         icon: ScanLine,
-        color: "bg-indigo-100 text-indigo-600"
+        color: "bg-indigo-100 text-indigo-600",
+        imageUrl: "https://images.unsplash.com/photo-1516382799247-87df95d790b7?q=80&w=2074&auto=format&fit=crop"
     },
     {
         id: "grooming",
@@ -113,7 +120,8 @@ export const services = [
         ],
         price: "40.00",
         icon: Scissors,
-        color: "bg-pink-100 text-pink-600"
+        color: "bg-pink-100 text-pink-600",
+        imageUrl: "https://images.unsplash.com/photo-1548767797-d8c844163c4c?q=80&w=2070&auto=format&fit=crop"
     },
     {
         id: "farmacia",
@@ -126,7 +134,8 @@ export const services = [
         ],
         price: "Variable",
         icon: Pill,
-        color: "bg-yellow-100 text-yellow-600"
+        color: "bg-yellow-100 text-yellow-600",
+        imageUrl: "https://images.unsplash.com/photo-1628771065518-0d82f1938462?q=80&w=2070&auto=format&fit=crop"
     },
     {
         id: "nutricion",
@@ -139,6 +148,7 @@ export const services = [
         ],
         price: "35.00",
         icon: Utensils,
-        color: "bg-lime-100 text-lime-600"
+        color: "bg-lime-100 text-lime-600",
+        imageUrl: "https://images.unsplash.com/photo-1589923188900-85dae523342b?q=80&w=2000&auto=format&fit=crop"
     }
 ];

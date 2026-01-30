@@ -8,28 +8,28 @@
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
   --radius-xl: calc(var(--radius) + 4px);
-  
+
   --color-background: hsl(var(--background));
   --color-foreground: hsl(var(--foreground));
-  
+
   --color-primary: hsl(var(--primary));
   --color-primary-foreground: hsl(var(--primary-foreground));
-  
+
   --color-secondary: hsl(var(--secondary));
   --color-secondary-foreground: hsl(var(--secondary-foreground));
-  
+
   --color-muted: hsl(var(--muted));
   --color-muted-foreground: hsl(var(--muted-foreground));
-  
+
   --color-accent: hsl(var(--accent));
   --color-accent-foreground: hsl(var(--accent-foreground));
-  
+
   --color-card: hsl(var(--card));
   --color-card-foreground: hsl(var(--card-foreground));
-  
+
   --color-border: hsl(var(--border));
   --color-input: hsl(var(--input));
-  
+
   --font-heading: 'Poppins', 'Montserrat', sans-serif;
   --font-body: 'Open Sans', 'Inter', sans-serif;
 }
@@ -43,18 +43,23 @@
   /* Lime Green #8BC34A -> 88 50% 53% */
 
   --background: 0 0% 100%;
-  --foreground: 146 50% 15%; /* Darker green for text */
+  --foreground: 146 50% 15%;
+  /* Darker green for text */
 
-  --primary: 146 50% 36%; /* Clinical Green */
+  --primary: 146 50% 36%;
+  /* Clinical Green */
   --primary-foreground: 0 0% 100%;
 
-  --secondary: 197 52% 54%; /* Soft Blue */
+  --secondary: 197 52% 54%;
+  /* Soft Blue */
   --secondary-foreground: 0 0% 100%;
 
-  --accent: 88 50% 53%; /* Lime Green */
+  --accent: 88 50% 53%;
+  /* Lime Green */
   --accent-foreground: 146 50% 15%;
 
-  --muted: 210 14% 96%; /* Light Gray */
+  --muted: 210 14% 96%;
+  /* Light Gray */
   --muted-foreground: 146 20% 40%;
 
   --card: 0 0% 100%;
@@ -62,7 +67,7 @@
 
   --border: 210 14% 90%;
   --input: 210 14% 90%;
-  
+
   --radius: 0.75rem;
 }
 
@@ -70,10 +75,21 @@
   * {
     @apply border-border;
   }
+
+  html,
   body {
     @apply font-body antialiased bg-background text-foreground;
+    overflow-x: hidden;
+    width: 100%;
+    position: relative;
   }
-  h1, h2, h3, h4, h5, h6 {
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
     @apply font-heading font-bold tracking-tight;
   }
 }

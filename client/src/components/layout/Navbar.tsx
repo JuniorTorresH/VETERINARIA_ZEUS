@@ -1,114 +1,211 @@
-import { Link } from "wouter";
-import { Button } from "@/components/ui/button";
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
-import { Menu, Phone } from "lucide-react";
-import { useState, useEffect } from "react";
+import { Link, useLocation } from "wouter";
 import { cn } from "@/lib/utils";
+import { Menu, X, User as UserIcon, LogOut, UserCircle } from "lucide-react";
+import { useState, useEffect } from "react";
+import { Button } from "@/components/ui/button";
+import { useAuth } from "@/hooks/use-auth";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+
+const NAV_ITEMS = [
+  { name: "Inicio", href: "/" },
+  { name: "Servicios", href: "/#servicios" },
+  { name: "Nosotros", href: "/#nosotros" },
+  { name: "Contacto", href: "/#contacto" },
+];
 
 export default function Navbar() {
-  const [isScrolled, setIsScrolled] = useState(false);
+  const [isOpen, setIsOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
+  const [location] = useLocation();
+  const { user, logoutMutation } = useAuth();
 
   useEffect(() => {
     const handleScroll = () => {
-      setIsScrolled(window.scrollY > 10);
+      setScrolled(window.scrollY > 50);
     };
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  const navLinks = [
-    { name: "Inicio", href: "#hero" },
-    { name: "Sobre Nosotros", href: "#about" },
-    { name: "Servicios", href: "#services" },
-    { name: "Especialistas", href: "#team" },
-    { name: "Testimonios", href: "#testimonials" },
-    { name: "Contacto", href: "#contact" },
-  ];
+  const handleNavClick = (href: string) => {
+    setIsOpen(false);
 
-  const handleScrollTo = (e: React.MouseEvent<HTMLAnchorElement>, id: string) => {
-    e.preventDefault();
-    const element = document.querySelector(id);
-    if (element) {
-      element.scrollIntoView({ behavior: "smooth" });
+    if (location !== "/") {
+      window.location.href = href;
+      return;
+    }
+
+    if (href === "/") {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    } else if (href.startsWith("/#")) {
+      const id = href.substring(2);
+      const element = document.getElementById(id);
+      if (element) {
+        element.scrollIntoView({ behavior: "smooth" });
+      }
     }
   };
 
   return (
     <nav
       className={cn(
-        "fixed top-0 left-0 right-0 z-50 transition-all duration-300 border-b border-transparent",
-        isScrolled
-          ? "bg-white/90 backdrop-blur-md border-border/40 py-2 shadow-sm"
-          : "bg-transparent py-4 text-white"
+        "fixed top-0 left-0 w-full z-50 transition-all duration-300",
+        scrolled ? "bg-white/95 backdrop-blur-md shadow-sm py-4" : "bg-transparent py-6"
       )}
     >
-      <div className="container mx-auto px-4 md:px-6 flex items-center justify-between">
-        <a 
-          href="#hero" 
-          className="text-2xl font-heading font-bold flex items-center gap-2"
-          onClick={(e) => handleScrollTo(e, "#hero")}
-        >
-          <span className={cn("text-primary", !isScrolled && "text-white")}>VET</span>
-          <span className={cn("text-gray-800", !isScrolled && "text-white/90")}>ZEUS</span>
-        </a>
-
-        {/* Desktop Nav */}
-        <div className="hidden md:flex items-center gap-8">
-          {navLinks.map((link) => (
-            <a
-              key={link.name}
-              href={link.href}
-              onClick={(e) => handleScrollTo(e, link.href)}
-              className={cn(
-                "text-sm font-medium transition-colors hover:text-primary",
-                !isScrolled ? "text-white/90 hover:text-white" : "text-gray-600"
-              )}
-            >
-              {link.name}
-            </a>
-          ))}
-          <Button 
-            className="bg-primary hover:bg-primary/90 text-white font-semibold rounded-full px-6"
-            onClick={() => document.getElementById("booking")?.scrollIntoView({ behavior: "smooth" })}
+      <div className="container mx-auto px-4 md:px-6">
+        <div className="flex items-center justify-between">
+          <a
+            href="/"
+            onClick={(e) => {
+              e.preventDefault();
+              handleNavClick("/");
+            }}
+            className="text-xl md:text-2xl font-bold text-primary flex items-center gap-2 cursor-pointer"
           >
-            Agendar Cita
-          </Button>
-        </div>
+            <span className="text-2xl md:text-3xl">🐾</span> Veterinaria Zeus
+          </a>
 
-        {/* Mobile Nav */}
-        <div className="md:hidden">
-          <Sheet>
-            <SheetTrigger asChild>
-              <Button variant="ghost" size="icon" className={cn(!isScrolled && "text-white hover:bg-white/20 hover:text-white")}>
-                <Menu className="h-6 w-6" />
-              </Button>
-            </SheetTrigger>
-            <SheetContent side="right">
-              <div className="flex flex-col gap-6 mt-10">
-                {navLinks.map((link) => (
-                  <a
-                    key={link.name}
-                    href={link.href}
-                    onClick={(e) => {
-                      handleScrollTo(e, link.href);
-                      // Close sheet logic would go here if we had control over the state
-                    }}
-                    className="text-lg font-medium text-gray-800 hover:text-primary"
-                  >
-                    {link.name}
-                  </a>
-                ))}
-                <Button 
-                  className="w-full bg-primary hover:bg-primary/90 text-white"
-                  onClick={() => document.getElementById("booking")?.scrollIntoView({ behavior: "smooth" })}
+          {/* Desktop Nav */}
+          <div className="hidden md:flex items-center gap-8">
+            <div className="flex gap-6">
+              {NAV_ITEMS.map((item) => (
+                <a
+                  key={item.name}
+                  href={item.href}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    handleNavClick(item.href);
+                  }}
+                  className={cn(
+                    "text-sm font-medium transition-colors duration-300 hover:text-primary relative group",
+                    scrolled ? "text-primary" : "text-white"
+                  )}
                 >
-                  Agendar Cita
-                </Button>
-              </div>
-            </SheetContent>
-          </Sheet>
+                  {item.name}
+                  <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-primary transition-all duration-300 group-hover:w-full" />
+                </a>
+              ))}
+            </div>
+
+            <div className="flex items-center gap-4 relative">
+              {user ? (
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="ghost" className="flex items-center gap-2 px-2 hover:bg-gray-100">
+                      <UserIcon className="h-5 w-5" />
+                      <span className="text-sm font-normal">Hola, {user.username}</span>
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end" className="absolute right-0 top-full mt-2 w-56 bg-white shadow-xl border border-gray-100 z-[100]">
+                    <DropdownMenuItem className="cursor-pointer text-[#000000] font-extrabold hover:bg-gray-100 focus:text-black">
+                      <UserIcon className="mr-2 h-4 w-4" />
+                      <span>Mi Perfil</span>
+                    </DropdownMenuItem>
+
+                    {user.username === 'admin' && (
+                      <Link href="/admin">
+                        <DropdownMenuItem className="cursor-pointer text-black font-extrabold hover:bg-gray-100 focus:text-black">
+                          <span className="mr-2">⚡</span>
+                          <span>Panel de Control</span>
+                        </DropdownMenuItem>
+                      </Link>
+                    )}
+
+                    <DropdownMenuItem
+                      onClick={() => logoutMutation.mutate()}
+                      className="cursor-pointer border-t mt-1 text-black font-extrabold hover:bg-gray-100 focus:text-black"
+                    >
+                      <LogOut className="mr-2 h-4 w-4" />
+                      Cerrar Sesión
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              ) : (
+                <Link href="/auth" className={cn(
+                  "flex items-center gap-2 transition-colors duration-300 group",
+                  scrolled ? "text-emerald-950 hover:text-emerald-800" : "text-white hover:text-white/80"
+                )}>
+                  <div className={cn(
+                    "p-1 rounded-full transition-colors duration-300",
+                    scrolled ? "group-hover:bg-emerald-950/10" : "group-hover:bg-white/10"
+                  )}>
+                    <UserCircle className="w-6 h-6" />
+                  </div>
+                  <span className="text-base font-bold">Iniciar Sesión</span>
+                </Link>
+              )}
+
+              <Button
+                onClick={() => handleNavClick("/#booking")}
+                className="rounded-full px-6 bg-primary hover:bg-primary/90"
+              >
+                Agendar Cita
+              </Button>
+            </div>
+          </div>
+
+          {/* Mobile Menu Button */}
+          <button
+            className="md:hidden p-2 text-gray-600"
+            onClick={() => setIsOpen(!isOpen)}
+          >
+            {isOpen ? <X /> : <Menu />}
+          </button>
         </div>
       </div>
+
+      {/* Mobile Nav */}
+      {isOpen && (
+        <div className="md:hidden absolute top-full left-0 right-0 bg-white border-b shadow-lg animate-in slide-in-from-top-5">
+          <div className="flex flex-col p-4 gap-4">
+            {NAV_ITEMS.map((item) => (
+              <a
+                key={item.name}
+                href={item.href}
+                onClick={(e) => {
+                  e.preventDefault();
+                  handleNavClick(item.href);
+                }}
+                className="text-gray-600 font-medium py-2 hover:text-primary transition-colors"
+              >
+                {item.name}
+              </a>
+            ))}
+            <div className="flex flex-col gap-2 pt-4 border-t">
+              {user ? (
+                <div className="flex flex-col gap-2">
+                  <div className="flex items-center gap-2 text-sm font-medium px-2 py-1.5 text-gray-600">
+                    <UserIcon className="h-4 w-4" />
+                    {user.username}
+                  </div>
+                  <Button
+                    variant="outline"
+                    onClick={() => logoutMutation.mutate()}
+                    className="w-full text-red-600 hover:text-red-600"
+                  >
+                    Cerrar Sesión
+                  </Button>
+                </div>
+              ) : (
+                <Link href="/auth">
+                  <Button variant="outline" className="w-full">
+                    Iniciar Sesión
+                  </Button>
+                </Link>
+              )}
+              <Button onClick={() => handleNavClick("/#booking")} className="w-full">
+                Agendar Cita
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
     </nav>
   );
 }

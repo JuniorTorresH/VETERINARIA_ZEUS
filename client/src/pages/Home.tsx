@@ -14,15 +14,19 @@ export default function Home() {
   return (
     <div className="min-h-screen bg-background font-body text-foreground">
       <Navbar />
-      
+
       <main>
         <Hero />
-        <About />
-        <Services />
+        <section id="nosotros">
+          <About />
+        </section>
+        <section id="servicios">
+          <Services />
+        </section>
         <BookingForm />
         <Specialists />
         <Gallery />
-        
+
         {/* Testimonials Section inline for simplicity as it's small */}
         <section id="testimonials" className="py-20 bg-primary/5">
           <div className="container px-4 md:px-6 mx-auto">
@@ -34,7 +38,7 @@ export default function Home() {
                 Lo que dicen nuestros clientes
               </h2>
             </div>
-            
+
             <div className="grid md:grid-cols-3 gap-8">
               {[
                 {
@@ -75,10 +79,12 @@ export default function Home() {
             </div>
           </div>
         </section>
-        
+
       </main>
 
-      <Footer />
+      <div id="contacto">
+        <Footer />
+      </div>
     </div>
   );
 }

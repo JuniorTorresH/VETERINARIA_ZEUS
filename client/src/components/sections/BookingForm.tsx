@@ -1,5 +1,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
+import { useMutation } from "@tanstack/react-query";
+import { apiRequest } from "@/lib/queryClient";
 import { z } from "zod";
 import { Button } from "@/components/ui/button";
 import {
@@ -14,13 +16,15 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
-import { CalendarIcon, Loader2 } from "lucide-react";
-import { format } from "date-fns";
+import { Link, useLocation } from "wouter";
+import { CalendarIcon, Loader2, User as UserIcon } from "lucide-react";
+import { format, startOfDay } from "date-fns";
 import { es } from "date-fns/locale";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Calendar } from "@/components/ui/calendar";
 import { cn } from "@/lib/utils";
-import { useState } from "react";
+import { useAuth } from "@/hooks/use-auth";
+
 
 const formSchema = z.object({
   ownerName: z.string().min(2, { message: "El nombre es requerido." }),
@@ -35,7 +39,7 @@ const formSchema = z.object({
 
 export default function BookingForm() {
   const { toast } = useToast();
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const { user } = useAuth();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -48,26 +52,63 @@ export default function BookingForm() {
     },
   });
 
-  function onSubmit(values: z.infer<typeof formSchema>) {
-    setIsSubmitting(true);
-    // Simulate API call
-    setTimeout(() => {
-      setIsSubmitting(false);
-      console.log(values);
+  const [, setLocation] = useLocation();
+
+  const mutation = useMutation({
+    mutationFn: async (values: z.infer<typeof formSchema>) => {
+      // Map form values to API schema
+      const payload = {
+        customerName: values.ownerName,
+        petName: values.petName,
+        species: values.species,
+        serviceType: values.serviceType,
+        email: values.email,
+        phone: values.phone,
+        preferredDate: values.date.toISOString(),
+        observations: values.notes,
+      };
+      const res = await apiRequest("POST", "/api/appointments", payload);
+      return await res.json();
+    },
+    onSuccess: (data) => {
       toast({
         title: "¡Cita agendada con éxito!",
-        description: `Te esperamos el ${format(values.date, "PPP", { locale: es })}. Hemos enviado un correo de confirmación.`,
+        // Use preferredDate from the response
+        description: `Te esperamos el ${format(new Date(data.preferredDate), "PPP", { locale: es })}. Hemos enviado un correo de confirmación.`,
         duration: 5000,
       });
       form.reset();
-    }, 1500);
+    },
+    onError: (error) => {
+      toast({
+        title: "Error",
+        description: "Hubo un problema al agendar la cita. Por favor intenta nuevamente.",
+        variant: "destructive",
+      });
+    },
+  });
+
+  function onSubmit(values: z.infer<typeof formSchema>) {
+    if (!user) {
+      toast({
+        title: "Inicia sesión",
+        description: "Para confirmar tu cita, necesitas identificarte.",
+        variant: "default",
+      });
+      setLocation("/auth");
+      return;
+    }
+    mutation.mutate(values);
   }
+
+  const isSubmitting = mutation.isPending;
+
 
   return (
     <section id="booking" className="py-20 relative bg-primary/5">
       <div className="container px-4 md:px-6 mx-auto">
         <div className="grid lg:grid-cols-2 gap-12 items-center">
-          
+
           {/* Text Content */}
           <div className="order-2 lg:order-1">
             <span className="text-primary font-semibold tracking-wider text-sm uppercase mb-2 block">
@@ -77,10 +118,10 @@ export default function BookingForm() {
               Sistema de Citas Online
             </h2>
             <p className="text-gray-600 mb-8 text-lg">
-              Reserva fácilmente una cita desde cualquier dispositivo. Nuestro sistema permite 
+              Reserva fácilmente una cita desde cualquier dispositivo. Nuestro sistema permite
               agendar consultas, servicios y controles médicos de forma rápida y segura.
             </p>
-            
+
             <div className="bg-white p-8 rounded-2xl shadow-lg border border-gray-100">
               <h3 className="text-xl font-bold mb-4 text-gray-900">Horarios de Atención</h3>
               <ul className="space-y-3">
@@ -117,7 +158,7 @@ export default function BookingForm() {
                 <h3 className="text-2xl font-bold">Reserva tu Cita</h3>
                 <p className="text-primary-foreground/80">Completa el formulario y te contactaremos</p>
               </div>
-              
+
               <div className="p-6 md:p-8">
                 <Form {...form}>
                   <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
@@ -258,7 +299,7 @@ export default function BookingForm() {
                                   selected={field.value}
                                   onSelect={field.onChange}
                                   disabled={(date) =>
-                                    date < new Date() || date < new Date("1900-01-01")
+                                    date < startOfDay(new Date()) || date < new Date("1900-01-01")
                                   }
                                   initialFocus
                                 />
@@ -277,10 +318,10 @@ export default function BookingForm() {
                         <FormItem>
                           <FormLabel>Observaciones (Opcional)</FormLabel>
                           <FormControl>
-                            <Textarea 
-                              placeholder="Breve descripción de los síntomas o requerimientos..." 
-                              className="resize-none" 
-                              {...field} 
+                            <Textarea
+                              placeholder="Breve descripción de los síntomas o requerimientos..."
+                              className="resize-none"
+                              {...field}
                             />
                           </FormControl>
                           <FormMessage />

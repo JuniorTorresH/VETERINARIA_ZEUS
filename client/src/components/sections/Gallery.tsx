@@ -1,6 +1,14 @@
 import { motion } from "framer-motion";
-import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { ZoomIn } from "lucide-react";
+// 1. REEMPLAZA esta importación (agregamos Header, Title y Description)
+import { 
+  Dialog, 
+  DialogContent, 
+  DialogTrigger,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription
+} from "@/components/ui/dialog";
 
 const galleryImages = [
   {
@@ -78,7 +86,18 @@ export default function Gallery() {
                     </div>
                   </div>
                 </DialogTrigger>
+                
+                {/* 2. REEMPLAZA SOLO EL INTERIOR DE DIALOGCONTENT */}
                 <DialogContent className="max-w-4xl bg-transparent border-none shadow-none p-0 overflow-hidden">
+                  
+                  {/* Esto es invisible pero quita el error de raíz */}
+                  <DialogHeader className="sr-only">
+                    <DialogTitle>{image.alt}</DialogTitle>
+                    <DialogDescription>
+                      Detalle de {image.category}
+                    </DialogDescription>
+                  </DialogHeader>
+
                   <img 
                     src={image.src} 
                     alt={image.alt} 
