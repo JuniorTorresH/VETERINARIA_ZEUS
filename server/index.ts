@@ -60,8 +60,13 @@ app.use((req, res, next) => {
   next();
 });
 
+// Initialization state
+let isInitialized = false;
+
 // Initialization function to be called before handling requests
 async function initializeServer() {
+  if (isInitialized) return;
+
   setupAuth(app);
   const httpServer = createServer(app);
   await registerRoutes(httpServer, app);
@@ -86,8 +91,17 @@ async function initializeServer() {
     await setupVite(httpServer, app);
   }
 
+  isInitialized = true;
   return httpServer;
 }
+
+// Middleware to ensure initialization on Vercel
+app.use(async (req, res, next) => {
+  if (process.env.VERCEL && !isInitialized) {
+    await initializeServer();
+  }
+  next();
+});
 
 // Export the app for Vercel
 export default app;
@@ -95,13 +109,11 @@ export default app;
 // For local development
 if (process.env.NODE_ENV !== "production" || !process.env.VERCEL) {
   initializeServer().then((httpServer) => {
-    const port = parseInt(process.env.PORT || "5000", 10);
-    httpServer.listen(port, "0.0.0.0", () => {
-      log(`Servidor corriendo en http://0.0.0.0:${port}`);
-    });
+    if (httpServer) {
+      const port = parseInt(process.env.PORT || "5000", 10);
+      httpServer.listen(port, "0.0.0.0", () => {
+        log(`Servidor corriendo en http://0.0.0.0:${port}`);
+      });
+    }
   });
-} else {
-  // On Vercel, we still need to run the initialization (routes registration)
-  // but we don't call .listen()
-  initializeServer();
 }
